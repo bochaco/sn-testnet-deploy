@@ -78,12 +78,16 @@ impl S3RepositoryInterface for S3Repository {
 
     async fn folder_exists(&self, bucket_name: &str, folder_path: &str) -> Result<bool> {
         let conf = aws_config::from_env().region("eu-west-2").load().await;
+        //println!("FOLDER exists: {conf:?}");
+        println!(">>> ENV: {}", std::env::var("AWS_ACCESS_KEY_ID").unwrap());
+
         let client = Client::new(&conf);
         let folder = if folder_path.ends_with('/') {
             folder_path.to_string()
         } else {
             format!("{}/", folder_path)
         };
+        println!("FOLDER exists: {folder}");
         let output = client
             .list_objects_v2()
             .bucket(bucket_name.to_string())
@@ -91,7 +95,10 @@ impl S3RepositoryInterface for S3Repository {
             .delimiter("/".to_string())
             .send()
             .await
-            .map_err(|_| Error::ListS3ObjectsError(folder_path.to_string()))?;
+            .map_err(|err| {
+                println!("FOLDER exists ERR: {err:?}");
+                Error::ListS3ObjectsError(folder_path.to_string())
+            })?;
         Ok(!output.contents().unwrap_or_default().is_empty())
     }
 }

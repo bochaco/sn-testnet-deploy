@@ -310,6 +310,7 @@ impl TestnetDeploy {
     }
 
     pub async fn init(&self, name: &str) -> Result<()> {
+        println!("## 0");
         if self
             .s3_repository
             .folder_exists("sn-testnet", &format!("testnet-logs/{name}"))
@@ -318,6 +319,7 @@ impl TestnetDeploy {
             return Err(Error::LogsForPreviousTestnetExist(name.to_string()));
         }
 
+        println!("## 1");
         self.terraform_runner.init()?;
         let workspaces = self.terraform_runner.workspace_list()?;
         if !workspaces.contains(&name.to_string()) {
@@ -325,6 +327,7 @@ impl TestnetDeploy {
         } else {
             println!("Workspace {name} already exists")
         }
+        println!("## 2");
 
         let rpc_client_path = self.working_directory_path.join("safenode_rpc_client");
         if !rpc_client_path.is_file() {
@@ -341,9 +344,11 @@ impl TestnetDeploy {
             permissions.set_mode(0o755); // rwxr-xr-x
             std::fs::set_permissions(&rpc_client_path, permissions)?;
         }
+        println!("## 3");
 
         let inventory_files = ["build", "genesis", "node"];
         for inventory_type in inventory_files.iter() {
+        println!("## 4");
             let src_path = self.inventory_file_path.clone();
             let dest_path = self
                 .working_directory_path

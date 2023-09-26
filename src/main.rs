@@ -246,6 +246,7 @@ async fn main() -> Result<()> {
             let testnet_deploy = TestnetDeployBuilder::default()
                 .provider(provider.clone())
                 .build()?;
+            println!(">>>> 1");
             let result = testnet_deploy.init(&name).await;
             match result {
                 Ok(_) => {}
@@ -264,10 +265,12 @@ async fn main() -> Result<()> {
                             ));
                     }
                     _ => {
+                        println!(">>>> 1.1");
                         return Err(eyre!(e));
                     }
                 },
             }
+            println!(">>>> 2");
 
             let logstash_deploy = LogstashDeployBuilder::default()
                 .provider(provider)
@@ -275,6 +278,7 @@ async fn main() -> Result<()> {
             let stack_hosts = logstash_deploy
                 .get_stack_hosts(&logstash_stack_name)
                 .await?;
+            println!(">>>> 3");
             testnet_deploy
                 .deploy(
                     &name,
